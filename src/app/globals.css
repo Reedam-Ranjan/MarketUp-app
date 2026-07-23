@@ -1,0 +1,84 @@
+@import "tailwindcss";
+
+/* Class-based dark mode: `dark:` utilities apply when <html> has the `.dark`
+   class (toggled by the sidebar switch), instead of following the OS setting. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Brand / accent */
+  --color-brand: #7c5cfc;
+  --color-brand-dark: #6a46ec;
+  --color-brand-soft: #ede9fe;
+
+  /* Surfaces */
+  --color-canvas: #eef0f4;
+  --color-surface: #ffffff;
+  --color-sidebar: #f7f8fb;
+
+  /* Text */
+  --color-ink: #1f2733;
+  --color-ink-soft: #4a5566;
+  --color-muted: #8b93a7;
+
+  /* Signals */
+  --color-up: #17a55a;
+  --color-up-soft: #e6f6ec;
+  --color-down: #ef4444;
+  --color-down-soft: #fdeaea;
+
+  /* Lines */
+  --color-line: #eceef3;
+  --color-line-strong: #e2e5ec;
+
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 1.25rem;
+}
+
+/* Dark theme: override the design tokens; every `bg-*`/`text-*` utility built
+   from these vars adapts automatically. */
+.dark {
+  --color-canvas: #0e1117;
+  --color-surface: #171c24;
+  --color-sidebar: #12161d;
+
+  --color-ink: #e7e9ee;
+  --color-ink-soft: #aab2bf;
+  --color-muted: #79828f;
+
+  --color-line: #232a34;
+  --color-line-strong: #2d3540;
+
+  --color-brand-soft: #241f3a;
+  --color-up-soft: #14301f;
+  --color-down-soft: #3a1e1e;
+}
+
+html {
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Thin, unobtrusive scrollbars for horizontal card rails */
+.rail-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+.rail-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.rail-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+  border-radius: 999px;
+}
+.rail-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
