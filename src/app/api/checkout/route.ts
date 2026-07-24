@@ -46,8 +46,21 @@ export async function POST(req: NextRequest) {
     }
 
     const priceId = await getOrCreateProPriceId();
+
+    // Build the redirect base from the ACTUAL request host so Stripe returns
+    // the user to wherever they are (localhost in dev, the deployed domain in
+    // prod). Deriving this from the request avoids the classic failure where a
+    // stale NEXT_PUBLIC_SITE_URL=localhost in the deploy env sends the redirect
+    // to the user's own machine. Falls back to the env var, then the origin.
+    const forwardedHost =
+      req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+    const forwardedProto =
+      req.headers.get("x-forwarded-proto") ??
+      req.nextUrl.protocol.replace(":", "");
     const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL ?? req.nextUrl.origin;
+      (forwardedHost && `${forwardedProto}://${forwardedHost}`) ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      req.nextUrl.origin;
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
