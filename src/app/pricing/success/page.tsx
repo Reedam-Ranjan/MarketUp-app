@@ -2,26 +2,30 @@ import Link from "next/link";
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe/server";
 import { syncSubscriptionForUser } from "@/lib/stripe/sync";
-import { getUser } from "@/lib/supabase/auth";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * Activates Pro from the Stripe Checkout session alone — the session carries
+ * `metadata.supabase_user_id` (set when we created it), so we don't depend on
+ * the browser session being present on the redirect back from Stripe. This
+ * mirrors the webhook and keeps activation working even if the auth cookie
+ * hiccups on return (which would otherwise bounce the user to /login and skip
+ * activation entirely).
+ */
 async function activate(sessionId: string): Promise<boolean> {
   try {
-    const user = await getUser();
-    if (!user) return false;
-
     const session = await getStripe().checkout.sessions.retrieve(sessionId, {
       expand: ["subscription"],
     });
 
-    // Only activate if this checkout belongs to the signed-in user.
-    if (session.metadata?.supabase_user_id !== user.id) return false;
+    const userId = session.metadata?.supabase_user_id;
+    if (!userId) return false;
 
     const sub = session.subscription as Stripe.Subscription | null;
     if (!sub) return false;
 
-    await syncSubscriptionForUser(user.id, sub);
+    await syncSubscriptionForUser(userId, sub);
     return true;
   } catch (err) {
     console.error("[pricing/success] activation failed:", err);

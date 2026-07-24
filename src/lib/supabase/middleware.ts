@@ -1,8 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/** Paths reachable without being signed in. */
-const PUBLIC_PREFIXES = ["/login", "/signup", "/auth"];
+/**
+ * Paths reachable without being signed in. `/pricing/success` is here because
+ * Stripe redirects back to it after checkout, and it must activate Pro even if
+ * the auth cookie hiccups on return (activation is driven by the Stripe session
+ * id, not the browser session).
+ */
+const PUBLIC_PREFIXES = ["/login", "/signup", "/auth", "/pricing/success"];
 
 function isPublic(pathname: string): boolean {
   return PUBLIC_PREFIXES.some(
