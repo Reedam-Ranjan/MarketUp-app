@@ -132,6 +132,30 @@ export const SparkleIcon = (p: IconProps) => (
   </Base>
 );
 
+export const StarIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M12 3.5l2.6 5.27 5.82.85-4.21 4.1.99 5.79L12 16.77l-5.2 2.74.99-5.79-4.21-4.1 5.82-.85L12 3.5Z" />
+  </Base>
+);
+
+export const StarFilledIcon = (p: IconProps) => (
+  <Base fill="currentColor" {...p}>
+    <path d="M12 3.5l2.6 5.27 5.82.85-4.21 4.1.99 5.79L12 16.77l-5.2 2.74.99-5.79-4.21-4.1 5.82-.85L12 3.5Z" />
+  </Base>
+);
+
+export const BookmarkIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M6 4.5h12a1 1 0 0 1 1 1V20l-7-4-7 4V5.5a1 1 0 0 1 1-1Z" />
+  </Base>
+);
+
+export const BookmarkFilledIcon = (p: IconProps) => (
+  <Base fill="currentColor" {...p}>
+    <path d="M6 4.5h12a1 1 0 0 1 1 1V20l-7-4-7 4V5.5a1 1 0 0 1 1-1Z" />
+  </Base>
+);
+
 export const SearchIcon = (p: IconProps) => (
   <Base {...p}>
     <circle cx="11" cy="11" r="7" />
