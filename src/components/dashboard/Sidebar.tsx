@@ -58,9 +58,13 @@ function setTheme(dark: boolean) {
 export default function Sidebar({
   email,
   isPro,
+  open = false,
+  onClose,
 }: {
   email?: string | null;
   isPro?: boolean;
+  open?: boolean;
+  onClose?: () => void;
 }) {
   const [signingOut, setSigningOut] = useState(false);
   const router = useRouter();
@@ -68,6 +72,7 @@ export default function Sidebar({
 
   async function signOut() {
     setSigningOut(true);
+    onClose?.();
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/login");
@@ -77,8 +82,38 @@ export default function Sidebar({
   const initials = (email ?? "?").slice(0, 2).toUpperCase();
 
   return (
-    <aside className="flex w-64 shrink-0 flex-col gap-6 bg-sidebar px-4 py-6">
-      <Logo />
+    <>
+      {/* Backdrop — only on mobile when the drawer is open. */}
+      {open && (
+        <div
+          onClick={onClose}
+          aria-hidden
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-64 shrink-0 flex-col gap-6 overflow-y-auto bg-sidebar px-4 py-6 transition-transform duration-300 lg:static lg:z-auto lg:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <Logo />
+          <button
+            onClick={onClose}
+            aria-label="Close menu"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-muted transition hover:bg-surface hover:text-ink lg:hidden"
+          >
+            <svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+              <path
+                d="M6 6l12 12M18 6L6 18"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+              />
+            </svg>
+          </button>
+        </div>
 
       <nav className="flex flex-col gap-1">
         {MAIN_NAV.map(({ label, icon: Icon, href }) => {
@@ -99,7 +134,12 @@ export default function Sidebar({
             </>
           );
           return href ? (
-            <Link key={label} href={href} className={className}>
+            <Link
+              key={label}
+              href={href}
+              onClick={onClose}
+              className={className}
+            >
               {inner}
             </Link>
           ) : (
@@ -133,6 +173,7 @@ export default function Sidebar({
         {!isPro && (
           <Link
             href="/pricing"
+            onClick={onClose}
             className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand to-brand-dark px-3.5 py-3 text-sm font-semibold text-white shadow-sm transition hover:opacity-95"
           >
             <SparkleIcon width={16} height={16} />
@@ -179,6 +220,7 @@ export default function Sidebar({
           </div>
         )}
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
