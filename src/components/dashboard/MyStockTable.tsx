@@ -6,7 +6,8 @@ import ChangeBadge from "@/components/ChangeBadge";
 import { SortIcon } from "@/components/icons";
 import { formatUSD } from "@/lib/format";
 import { useQuotes } from "@/lib/market/client";
-import type { WatchSymbol } from "@/lib/watchlist";
+import { useRemoveFromWatchlist } from "@/lib/watchlist-client";
+import type { StockItem } from "@/components/dashboard/StockSummaryCards";
 
 const COLUMNS = [
   { key: "name", label: "Name Stock", align: "left" },
@@ -14,23 +15,29 @@ const COLUMNS = [
   { key: "prevClose", label: "Prev Close", align: "left" },
   { key: "change", label: "Change", align: "left" },
   { key: "price", label: "Price/stock", align: "right" },
+  { key: "actions", label: "", align: "right" },
 ] as const;
 
 export default function MyStockTable({
-  watchlist,
+  items,
+  title = "My Stock",
+  showRemove = false,
 }: {
-  watchlist: WatchSymbol[];
+  items: StockItem[];
+  title?: string;
+  showRemove?: boolean;
 }) {
   const router = useRouter();
-  const symbols = watchlist.map((w) => w.symbol);
+  const symbols = items.map((w) => w.symbol);
   const { bySymbol, isLoading } = useQuotes(symbols);
+  const remove = useRemoveFromWatchlist();
 
   return (
     <section className="flex flex-col gap-5 rounded-card border border-line bg-surface p-6">
-      <h2 className="text-lg font-bold text-ink">My Stock</h2>
+      <h2 className="text-lg font-bold text-ink">{title}</h2>
 
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] border-collapse">
+        <table className="w-full min-w-[680px] border-collapse">
           <thead>
             <tr className="border-b border-line">
               {COLUMNS.map((c) => (
@@ -40,20 +47,22 @@ export default function MyStockTable({
                     c.align === "right" ? "text-right" : "text-left"
                   }`}
                 >
-                  <span
-                    className={`inline-flex items-center gap-1 ${
-                      c.align === "right" ? "flex-row-reverse" : ""
-                    }`}
-                  >
-                    {c.label}
-                    <SortIcon width={14} height={14} className="text-muted" />
-                  </span>
+                  {c.label && (
+                    <span
+                      className={`inline-flex items-center gap-1 ${
+                        c.align === "right" ? "flex-row-reverse" : ""
+                      }`}
+                    >
+                      {c.label}
+                      <SortIcon width={14} height={14} className="text-muted" />
+                    </span>
+                  )}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {watchlist.map((w) => {
+            {items.map((w) => {
               const q = bySymbol.get(w.symbol);
               return (
                 <tr
@@ -66,7 +75,9 @@ export default function MyStockTable({
                       <BrandLogo symbol={w.symbol} size="sm" />
                       <div>
                         <p className="font-semibold text-ink">{w.symbol}</p>
-                        <p className="text-sm text-muted">{w.name}</p>
+                        <p className="text-sm text-muted">
+                          {w.name ?? w.symbol}
+                        </p>
                       </div>
                     </div>
                   </td>
@@ -85,6 +96,20 @@ export default function MyStockTable({
                   </td>
                   <td className="py-4 text-right font-semibold text-ink">
                     {q ? formatUSD(q.price, 2) : isLoading ? "…" : "—"}
+                  </td>
+                  <td className="py-4 text-right">
+                    {showRemove && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          remove.mutate(w.symbol);
+                        }}
+                        title="Remove from watchlist"
+                        className="rounded-lg px-2 py-1 text-sm font-medium text-muted transition hover:bg-down-soft hover:text-down"
+                      >
+                        Remove
+                      </button>
+                    )}
                   </td>
                 </tr>
               );

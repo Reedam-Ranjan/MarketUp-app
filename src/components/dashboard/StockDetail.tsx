@@ -4,6 +4,8 @@ import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
 import ChangeBadge from "@/components/ChangeBadge";
 import NewsList from "@/components/NewsList";
+import AddToWatchlistButton from "@/components/AddToWatchlistButton";
+import AddToPortfolioButton from "@/components/AddToPortfolioButton";
 import PriceChart from "@/components/dashboard/PriceChart";
 import { ChevronRightIcon } from "@/components/icons";
 import { formatCompactUSD, formatUSD } from "@/lib/format";
@@ -19,7 +21,13 @@ function StatRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function StockDetail({ symbol }: { symbol: string }) {
+export default function StockDetail({
+  symbol,
+  isPro,
+}: {
+  symbol: string;
+  isPro: boolean;
+}) {
   const { data: quote, isError: quoteError } = useQuote(symbol);
   const { data: profile } = useProfile(symbol);
   const {
@@ -55,9 +63,9 @@ export default function StockDetail({ symbol }: { symbol: string }) {
             </p>
           </div>
         </div>
-        <div className="text-right">
+        <div className="flex flex-col items-end gap-3">
           {quote ? (
-            <>
+            <div className="text-right">
               <p className="text-3xl font-extrabold tracking-tight text-ink">
                 {formatUSD(quote.price, 2)}
               </p>
@@ -67,12 +75,20 @@ export default function StockDetail({ symbol }: { symbol: string }) {
                   {formatUSD(quote.change, 2)} today
                 </span>
               </div>
-            </>
+            </div>
           ) : quoteError ? (
             <p className="text-muted">Quote unavailable</p>
           ) : (
-            <div className="ml-auto h-9 w-32 animate-pulse rounded-md bg-canvas" />
+            <div className="h-9 w-32 animate-pulse rounded-md bg-canvas" />
           )}
+          <div className="flex items-center gap-2">
+            <AddToWatchlistButton symbol={symbol} name={name} isPro={isPro} />
+            <AddToPortfolioButton
+              symbol={symbol}
+              isPro={isPro}
+              currentPrice={quote?.price}
+            />
+          </div>
         </div>
       </section>
 

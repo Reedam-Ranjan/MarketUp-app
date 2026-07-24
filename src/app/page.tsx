@@ -5,13 +5,13 @@ import StatisticsChart from "@/components/dashboard/StatisticsChart";
 import MyStockTable from "@/components/dashboard/MyStockTable";
 import { DEFAULT_WATCHLIST } from "@/lib/watchlist";
 
-export default function DashboardPage() {
+export default function OverviewPage() {
   return (
     <DashboardShell
-      title="Portfolio"
-      subtitle="Track your investments and the market at a glance."
+      title="Overview"
+      subtitle="Track the market and your investments at a glance."
     >
-      <StockSummaryCards watchlist={DEFAULT_WATCHLIST} />
+      <StockSummaryCards items={DEFAULT_WATCHLIST} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <div className="lg:col-span-2">
@@ -22,7 +22,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <MyStockTable watchlist={DEFAULT_WATCHLIST} />
+      <MyStockTable items={DEFAULT_WATCHLIST} title="All Stocks" />
     </DashboardShell>
   );
 }

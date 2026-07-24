@@ -41,3 +41,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local design-reference screenshots (not part of the app)
+/AddToPorfolioandWatchlistButton.png
+/PortfolioRefPage.png
+/SupabaseSchemaReference.png
+/addedRef.png
+/proBadgeRef.png
+/stockAddForm.png
+/watchlistRef.png
+
+# Claude Code local tooling
+/.claude/
